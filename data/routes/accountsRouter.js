@@ -15,4 +15,33 @@ router.get('/', (req, res) => {
     })
 });
 
+
+router.get('/:id', validateAccountID, (req, res) => {
+    const {id} = req.params;
+    db('accounts').where('id', id).first().select()
+    .then(account => {
+        res.status(200).json(account)
+    })
+
+    .catch(err => {
+        res.status(500).json(err)
+    })
+});
+
+
+function validateAccountID (req, res, next) {
+    const accountBody = req.body;
+    const {id} = req.params
+
+    db('accounts').where('id', id).first().select()
+    .then(res => {
+        if (res) {
+            req.account = accountBody;
+            next();
+        } else {
+            res.status(404).json({message: 'Cannot find account with this ID'})
+        }
+    })
+}
+
 module.exports = router;
