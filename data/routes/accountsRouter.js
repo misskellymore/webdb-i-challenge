@@ -43,6 +43,43 @@ router.post('/', validateAccount, (req,res) => {
     })
 })
 
+// Put
+
+router.put('/:id', validateAccountID, (req, res) => {
+    const change = req.body;
+    const { id } = req.params;
+
+    if (!Object.keys(change).length) {
+        res.status(400).json({ message: 'update name or budget' });
+    } else if (!change.name && !change.budget) {
+        res.status(400).json({ message: 'update name or budget' });
+    }
+    else {
+        db('accounts').where('id', id).update(change)
+        .then(update => {
+            res.status(200).json(update)
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        })
+    }
+})
+
+
+// Del
+
+router.delete('/:id', validateAccountID, (req, res) => {
+    const {id} = req.params;
+
+    db('accounts').where('id', id).delete()
+    .then(del => {
+        res.status(200).json(del)
+    })
+    .catch(err => {
+        res.status(500).json(err)
+    })
+});
+
 
 
 // middlewares
